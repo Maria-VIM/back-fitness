@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Pool, QueryResult } from 'pg';
-import { UserInterface } from './interfaces/user-interface';
+import { UserInterface } from './interfaces/user.interface';
 import * as argon2 from 'argon2';
 import { UserCreateDto } from './dto/user-create.dto';
 import { nanoid } from 'nanoid';

@@ -8,5 +8,6 @@ import { VerificationModule } from '../verification/verification.module';
   imports: [VerificationModule],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository],
+  exports: [UsersService, UsersRepository],
 })
 export class UsersModule {}

@@ -5,7 +5,10 @@ import { UsersModule } from './modules/users/users.module';
 import { Pool } from 'pg';
 import { ConfigModule } from '@nestjs/config';
 import { VerificationModule } from './modules/verification/verification.module';
-import { ArticlesModule } from './modules/articles/articles.module';
+import { WorkoutsModule } from './modules/workouts/workouts.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import path from 'path';
+import { RedisModule } from './modules/redis/redis.module';
 
 @Global()
 @Module({
@@ -15,7 +18,13 @@ import { ArticlesModule } from './modules/articles/articles.module';
     ExercisesModule,
     UsersModule,
     VerificationModule,
-    ArticlesModule,
+    WorkoutsModule,
+    RedisModule,
+    AuthModule,
+    ServeStaticModule.forRoot({
+      rootPath: path.join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
+    }),
   ],
   providers: [
     {
