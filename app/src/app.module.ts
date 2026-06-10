@@ -8,7 +8,9 @@ import { VerificationModule } from './modules/verification/verification.module';
 import { WorkoutsModule } from './modules/workouts/workouts.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import path from 'path';
+import { APP_GUARD } from '@nestjs/core';
 import { RedisModule } from './modules/redis/redis.module';
+import { SessionGuard } from './modules/auth/guards/session.guard';
 
 @Global()
 @Module({
@@ -38,6 +40,10 @@ import { RedisModule } from './modules/redis/redis.module';
           password: process.env.POSTGRES_PASSWORD,
         });
       },
+    },
+    {
+      provide: APP_GUARD,
+      useClass: SessionGuard,
     },
   ],
   exports: ['pool'],

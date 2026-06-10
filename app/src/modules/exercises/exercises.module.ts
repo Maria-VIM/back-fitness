@@ -19,5 +19,6 @@ import { CategoriesService } from './services/categories.service';
     CategoriesRepository,
     CategoriesService,
   ],
+  exports: [ExercisesService],
 })
 export class ExercisesModule {}

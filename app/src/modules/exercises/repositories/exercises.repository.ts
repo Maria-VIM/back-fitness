@@ -32,6 +32,18 @@ export class ExercisesRepository {
     return exercises.rows;
   }
 
+  async findByCategories(categoryIds: number[], maxDifficulty: number): Promise<ExerciseInterface[]> {
+    const result: QueryResult<ExerciseInterface> = await this.pool.query(
+      `
+    SELECT DISTINCT e.*
+    FROM exercises e JOIN "exercisesCategory" ec ON ec."exerciseId" = e.id
+    WHERE ec."categoryId" = ANY($1) AND e.difficulty <= $2 AND e."deletedAt" IS NULL
+    `,
+      [categoryIds, maxDifficulty],
+    );
+    return result.rows;
+  }
+
   async getOne(id: number): Promise<ExerciseInterface> {
     const exercise: QueryResult<ExerciseInterface> = await this.pool.query(
       `SELECT e.id, e.title, e."imagePath", e.content, e.during, e."createdAt", e."deletedAt",

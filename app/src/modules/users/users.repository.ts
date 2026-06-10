@@ -5,6 +5,7 @@ import * as argon2 from 'argon2';
 import { UserCreateDto } from './dto/user-create.dto';
 import { nanoid } from 'nanoid';
 import { VerificationRepository } from '../verification/verification.repository';
+import { EntityInUse } from '../../shared/errors/entity-in-use';
 
 @Injectable()
 export class UsersRepository {
@@ -19,7 +20,7 @@ export class UsersRepository {
 
   async getOneByEmail(email: string, isVerified: boolean): Promise<UserInterface> {
     const user: QueryResult<UserInterface> = await this.pool.query(
-      `SELECT id, username, "passwordHash" FROM users WHERE email = $1 AND "isVerified" = $2`,
+      `SELECT id, username, "passwordHash", "isAdmin" FROM users WHERE email = $1 AND "isVerified" = $2`,
       [email, isVerified],
     );
     return user.rows[0];
@@ -29,7 +30,7 @@ export class UsersRepository {
     const { username, birthday, email, password } = body;
     const hasVerifiedAccount: UserInterface = await this.getOneByEmail(email, true);
     if (hasVerifiedAccount) {
-      throw new Error('User with this email already exists and is verified');
+      throw new EntityInUse('USER_EMAIL');
     }
     const hashedPassword: string = await argon2.hash(password);
     const code: string = nanoid(6);

@@ -3,6 +3,7 @@ import { CategoriesRepository } from '../repositories/categories.repository';
 import { CategoryCreateDto } from '../dto/categories/category-create.dto';
 import { CategoryInterface } from '../interfaces/category.interface';
 import { CategoryUpdateDto } from '../dto/categories/category-update.dto';
+import { EntityIsUndefined } from '../../../shared/errors/entity-is-undefined';
 
 @Injectable()
 export class CategoriesService {
@@ -12,7 +13,11 @@ export class CategoriesService {
   }
 
   async getOne(id: number): Promise<CategoryInterface> {
-    return this.categoriesRepository.getOne(id);
+    const category: CategoryInterface = await this.categoriesRepository.getOne(id);
+    if (!category) {
+      throw new EntityIsUndefined('CATEGORY');
+    }
+    return category;
   }
 
   async create(body: CategoryCreateDto): Promise<CategoryInterface> {

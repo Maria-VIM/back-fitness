@@ -3,6 +3,7 @@ import { ExercisesRepository } from '../repositories/exercises.repository';
 import { ExerciseCreateDto } from '../dto/exercises/exercise-create.dto';
 import { ExerciseUpdateDto } from '../dto/exercises/exercise-update.dto';
 import { ExerciseInterface } from '../interfaces/exercise.interface';
+import { EntityIsUndefined } from '../../../shared/errors/entity-is-undefined';
 
 @Injectable()
 export class ExercisesService {
@@ -15,8 +16,16 @@ export class ExercisesService {
     return await this.exercisesRepository.getAll(categoryId);
   }
 
+  async findByCategories(categoryIds: number[], maxDifficulty: number): Promise<ExerciseInterface[]> {
+    return await this.exercisesRepository.findByCategories(categoryIds, maxDifficulty);
+  }
+
   async getOne(id: number): Promise<ExerciseInterface> {
-    return await this.exercisesRepository.getOne(id);
+    const exercise: ExerciseInterface = await this.exercisesRepository.getOne(id);
+    if (!exercise) {
+      throw new EntityIsUndefined('EXERCISE');
+    }
+    return exercise;
   }
 
   async create(body: ExerciseCreateDto): Promise<ExerciseInterface> {

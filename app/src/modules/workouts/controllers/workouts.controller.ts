@@ -4,6 +4,7 @@ import { WorkoutsInterface } from '../interfaces/workouts.interface';
 import { WorkoutCreateDto } from '../dto/workouts/workout-create.dto';
 import { WorkoutUpdateDto } from '../dto/workouts/workout-update.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { GenerateWorkoutsCreateDto } from '../dto/workouts/generate-workouts-create.dto';
 
 @Controller('workouts')
 export class WorkoutsController {
@@ -26,6 +27,13 @@ export class WorkoutsController {
   async create(@Body() body: WorkoutCreateDto, @Req() req: any): Promise<WorkoutsInterface> {
     const userId: number = Number(req.session.user?.id);
     return await this.workoutsService.create(userId, body);
+  }
+
+  @Post('generated')
+  @UseGuards(AuthGuard('session'))
+  async generatePlan(@Body() body: GenerateWorkoutsCreateDto, @Req() req: any): Promise<WorkoutsInterface> {
+    const userId: number = Number(req.session.user?.id);
+    return await this.workoutsService.generatePlan(userId, body);
   }
 
   @Put(':id')

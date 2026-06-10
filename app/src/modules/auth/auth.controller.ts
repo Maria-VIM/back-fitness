@@ -1,16 +1,16 @@
 import { Body, Controller, Get, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { LoginRequest } from './dto/login-request.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor() {}
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  async login(@Body() loginRequest: LoginRequest, @Req() req: any) {
+  login(@Req() req: any) {
     req.session.user = req.user;
     return {
       message: 'Login successful',
+      user: req.user,
     };
   }
 
