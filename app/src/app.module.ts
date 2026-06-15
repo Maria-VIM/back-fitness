@@ -11,6 +11,9 @@ import path from 'path';
 import { APP_GUARD } from '@nestjs/core';
 import { RedisModule } from './modules/redis/redis.module';
 import { SessionGuard } from './modules/auth/guards/session.guard';
+import { seconds, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { SharedAuthModule } from './shared/auth/shared-auth.module';
 
 @Global()
 @Module({
@@ -23,9 +26,19 @@ import { SessionGuard } from './modules/auth/guards/session.guard';
     WorkoutsModule,
     RedisModule,
     AuthModule,
+    SharedAuthModule,
     ServeStaticModule.forRoot({
       rootPath: path.join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
+    }),
+    ThrottlerModule.forRoot([
+      { name: `short`, ttl: seconds(1), limit: 5 },
+      { name: `medium`, ttl: seconds(10), limit: 50 },
+      { name: `long`, ttl: seconds(1), limit: 300 },
+    ]),
+    PrometheusModule.register({
+      defaultMetrics: { enabled: true },
+      path: '/metrics',
     }),
   ],
   providers: [
@@ -44,6 +57,10 @@ import { SessionGuard } from './modules/auth/guards/session.guard';
     {
       provide: APP_GUARD,
       useClass: SessionGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
   exports: ['pool'],

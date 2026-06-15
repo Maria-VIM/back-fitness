@@ -17,15 +17,15 @@ export class PlansController {
     return this.plansService.get(personalWorkoutId);
   }
 
-  @Get(':personalWorkoutId/position/:position')
+  @Get(':id/workout/:personalWorkoutId')
   @UseGuards(AuthGuard('session'))
-  async getOneByPosition(
+  async getOne(
     @Param('personalWorkoutId', ParseIntPipe)
     personalWorkoutId: number,
-    @Param('position', ParseIntPipe)
-    position: number,
+    @Param('id', ParseIntPipe)
+    id: number,
   ): Promise<PlansInterface> {
-    return this.plansService.getOneByPosition(personalWorkoutId, position);
+    return this.plansService.getOne(personalWorkoutId, id);
   }
 
   @Post()

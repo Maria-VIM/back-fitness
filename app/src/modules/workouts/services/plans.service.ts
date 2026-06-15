@@ -11,8 +11,8 @@ export class PlansService {
     return this.plansRepository.get(personalWorkoutId);
   }
 
-  async getOneByPosition(personalWorkoutId: number, position: number): Promise<PlansInterface> {
-    return this.plansRepository.getOneByPosition(personalWorkoutId, position);
+  async getOne(personalWorkoutId: number, id: number): Promise<PlansInterface> {
+    return this.plansRepository.getOne(personalWorkoutId, id);
   }
 
   async create(body: PlanCreateDto): Promise<PlansInterface> {

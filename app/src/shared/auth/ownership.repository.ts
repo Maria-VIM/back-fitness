@@ -7,7 +7,7 @@ export class OwnershipRepository {
   async ownAdminPermission(userId: string): Promise<boolean> {
     const result: QueryResult<{ ok: boolean }> = await this.pool.query(
       `
-        SELECT EXISTS( SELECT 1 FROM users WHERE user_id = $1 AND "isAdmin" == true) AS ok`,
+        SELECT EXISTS( SELECT 1 FROM users WHERE id = $1 AND "isAdmin" = true) AS ok`,
       [userId],
     );
     return result.rows[0]?.ok === true;

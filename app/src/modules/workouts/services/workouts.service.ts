@@ -16,6 +16,14 @@ export class WorkoutsService {
     return await this.workoutsRepository.getOne(id);
   }
 
+  async getAllPlans(userId: number): Promise<number> {
+    return await this.workoutsRepository.getAllPlans(userId);
+  }
+
+  async getActiveTotal(userId: number): Promise<number> {
+    return await this.workoutsRepository.getActiveTotal(userId);
+  }
+
   async create(userId: number, body: WorkoutCreateDto): Promise<WorkoutsInterface> {
     return await this.workoutsRepository.create(userId, body);
   }

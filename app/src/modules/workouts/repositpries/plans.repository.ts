@@ -9,7 +9,7 @@ export class PlansRepository {
   constructor(@Inject('pool') private pool: Pool) {}
   async get(personalWorkoutId: number): Promise<PlansInterface[]> {
     const exercises: QueryResult<PlansInterface> = await this.pool.query(
-      `SELECT pe.id, e.title, e.content, e.during, pe.sets, pe.reps, pe."orderIndex"
+      `SELECT pe.id, e.title, e.content, e.during, e."imagePath", pe.sets, pe.reps, pe."orderIndex"
         FROM "planExercises" pe JOIN exercises e ON pe."exerciseId" = e.id 
         WHERE "personalWorkoutId" = $1 AND pe."deletedAt" IS NULL ORDER BY "orderIndex"`,
       [personalWorkoutId],
@@ -17,12 +17,12 @@ export class PlansRepository {
     return exercises.rows;
   }
 
-  async getOneByPosition(personalWorkoutId: number, position: number): Promise<PlansInterface> {
+  async getOne(personalWorkoutId: number, id: number): Promise<PlansInterface> {
     const exercise: QueryResult<PlansInterface> = await this.pool.query(
       `SELECT e.title, e.content, e."imagePath", e.during, pe.sets, pe.reps, pe."orderIndex"
         FROM "planExercises" pe JOIN exercises e ON pe."exerciseId" = e.id
-        WHERE "personalWorkoutId" = $1 AND "orderIndex" = $2`,
-      [personalWorkoutId, position],
+        WHERE "personalWorkoutId" = $1 AND pe.id = $2`,
+      [personalWorkoutId, id],
     );
     return exercise.rows[0];
   }

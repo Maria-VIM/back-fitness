@@ -16,13 +16,63 @@ export class WorkoutsRepository {
   ) {}
   async get(userId: number): Promise<WorkoutsInterface[]> {
     const workouts: QueryResult<WorkoutsInterface> = await this.pool.query(
-      `SELECT pw.id, pw.title, pwd."daysOfWeek", pw."deletedAt"
-        FROM "personalWorkouts" pw 
-          LEFT JOIN "personalWorkoutDays" pwd ON pwd."personalWorkoutId" = pw.id
-        WHERE "userId" = $1 AND "deletedAt" IS NULL`,
+      `
+        SELECT
+          pw.id,
+          pw.title,
+          pwd."daysOfWeek",
+          pw."deletedAt",
+          EXISTS (
+            SELECT 1
+            FROM "workoutSessions" ws
+            WHERE ws."personalWorkoutId" = pw.id
+              AND DATE(ws."finishedAt") = CURRENT_DATE
+          ) AS "completedToday"
+        FROM "personalWorkouts" pw
+               LEFT JOIN "personalWorkoutDays" pwd
+                         ON pwd."personalWorkoutId" = pw.id
+        WHERE pw."userId" = $1
+          AND pw."deletedAt" IS NULL
+      `,
       [userId],
     );
     return workouts.rows;
+  }
+
+  async getAllPlans(userId: number): Promise<number> {
+    const result: QueryResult<{ total: number }> = await this.pool.query(
+      `
+        SELECT COUNT(*)::int AS total
+        FROM "personalWorkouts" pw
+        WHERE pw."userId" = $1
+          AND pw."deletedAt" IS NULL
+      `,
+      [userId],
+    );
+
+    return result.rows[0]?.total ?? 0;
+  }
+
+  async getActiveTotal(userId: number): Promise<number> {
+    const result: QueryResult<{ total: number }> = await this.pool.query(
+      `
+    SELECT COUNT(*)::int AS total
+    FROM "personalWorkouts" pw
+    LEFT JOIN "personalWorkoutDays" pwd
+      ON pwd."personalWorkoutId" = pw.id
+    WHERE pw."userId" = $1
+      AND pw."deletedAt" IS NULL
+      AND lower(trim(to_char(CURRENT_DATE, 'day'))) = ANY(pwd."daysOfWeek"::text[])
+      AND NOT EXISTS (
+        SELECT 1
+        FROM "workoutSessions" ws
+        WHERE ws."personalWorkoutId" = pw.id
+          AND DATE(ws."finishedAt") = CURRENT_DATE
+      )
+    `,
+      [userId],
+    );
+    return result.rows[0]?.total ?? 0;
   }
 
   async getOne(id: number): Promise<WorkoutsInterface> {

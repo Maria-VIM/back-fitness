@@ -12,7 +12,7 @@ export class GroupsRepository {
         SELECT g.id, g.name, CAST(COUNT(DISTINCT c.id) as integer) as using
         FROM groups g LEFT JOIN categories c ON g.id = c."groupId"
         GROUP BY g.id
-        ORDER BY g.id ASC`);
+        ORDER BY g.id DESC`);
     return groups.rows;
   }
 

@@ -21,12 +21,13 @@ export class ExercisesRepository {
   }
 
   async getAll(categoryId?: number): Promise<ExerciseInterface[]> {
-    const base: string = `SELECT e.id, e.title, e."imagePath", e.during, ARRAY_AGG(c.name) as categories
+    const base: string = `SELECT e.id, e.title, e."imagePath", e.difficulty, e.during, ARRAY_AGG(c.name) as categories
         FROM exercises e LEFT JOIN "exercisesCategory" ec ON e.id = ec."exerciseId" LEFT JOIN categories c ON ec."categoryId" = c.id`;
     const groupBy = ` GROUP BY e.id`;
+    const orderBy: string = ` ORDER BY e.id DESC`;
     const where: string = categoryId ? ` WHERE c.id = $1 AND "deletedAt" IS NULL` : ' WHERE "deletedAt" IS NULL';
     const exercises: QueryResult<ExerciseInterface> = await this.pool.query(
-      base + where + groupBy,
+      base + where + groupBy + orderBy,
       categoryId ? [categoryId] : [],
     );
     return exercises.rows;

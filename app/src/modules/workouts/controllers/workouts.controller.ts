@@ -22,6 +22,20 @@ export class WorkoutsController {
     return await this.workoutsService.getOne(id);
   }
 
+  @Get('total')
+  @UseGuards(AuthGuard('session'))
+  async getAllPlans(@Req() req: any): Promise<number> {
+    const userId: number = Number(req.session.user?.id);
+    return await this.workoutsService.getAllPlans(userId);
+  }
+
+  @Get('active/total')
+  @UseGuards(AuthGuard('session'))
+  async getActiveTotal(@Req() req: any): Promise<number> {
+    const userId: number = Number(req.session.user?.id);
+    return await this.workoutsService.getActiveTotal(userId);
+  }
+
   @Post()
   @UseGuards(AuthGuard('session'))
   async create(@Body() body: WorkoutCreateDto, @Req() req: any): Promise<WorkoutsInterface> {

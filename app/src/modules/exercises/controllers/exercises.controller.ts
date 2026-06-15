@@ -22,6 +22,8 @@ import * as path from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'node:fs';
 import { AuthGuard } from '@nestjs/passport';
+import { OwnedResource } from '../../../shared/auth/own-resource.decorator';
+import { OwnsResourceGuard } from '../../../shared/auth/owns-resourse.guard';
 
 @Controller('exercises')
 export class ExercisesController {
@@ -37,7 +39,7 @@ export class ExercisesController {
   }
 
   @Get('all')
-  @UseGuards(AuthGuard('session'))
+  @UseGuards(AuthGuard('session'), OwnsResourceGuard)
   async getAll(@Query('categoryId') categoryId?: number): Promise<ExerciseInterface[]> {
     return await this.exercisesService.getAll(categoryId);
   }
@@ -49,7 +51,8 @@ export class ExercisesController {
   }
 
   @Post('image')
-  @UseGuards(AuthGuard('session'))
+  @OwnedResource()
+  @UseGuards(AuthGuard('session'), OwnsResourceGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: memoryStorage(),
@@ -69,25 +72,29 @@ export class ExercisesController {
   }
 
   @Post()
-  @UseGuards(AuthGuard('session'))
+  @OwnedResource()
+  @UseGuards(AuthGuard('session'), OwnsResourceGuard)
   async create(@Body() body: ExerciseCreateDto): Promise<ExerciseInterface> {
     return await this.exercisesService.create(body);
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard('session'))
+  @OwnedResource()
+  @UseGuards(AuthGuard('session'), OwnsResourceGuard)
   async update(@Param('id', ParseIntPipe) id: number, @Body() body: ExerciseUpdateDto): Promise<ExerciseInterface> {
     return await this.exercisesService.update(id, body);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('session'))
+  @OwnedResource()
+  @UseGuards(AuthGuard('session'), OwnsResourceGuard)
   async delete(@Param('id', ParseIntPipe) id: number): Promise<ExerciseInterface> {
     return await this.exercisesService.delete(id);
   }
 
   @Post(':id/categories/:categoryId')
-  @UseGuards(AuthGuard('session'))
+  @OwnedResource()
+  @UseGuards(AuthGuard('session'), OwnsResourceGuard)
   async addCategory(
     @Param('id', ParseIntPipe) id: number,
     @Param('categoryId', ParseIntPipe) categoryId: number,
@@ -96,7 +103,8 @@ export class ExercisesController {
   }
 
   @Delete(':id/categories/:categoryId')
-  @UseGuards(AuthGuard('session'))
+  @OwnedResource()
+  @UseGuards(AuthGuard('session'), OwnsResourceGuard)
   async deleteCategory(
     @Param('id', ParseIntPipe) id: number,
     @Param('categoryId', ParseIntPipe) categoryId: number,

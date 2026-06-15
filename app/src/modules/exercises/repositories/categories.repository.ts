@@ -12,9 +12,10 @@ export class CategoriesRepository {
                                FROM categories c
                                  LEFT JOIN "exercisesCategory" ec ON c.id = ec."categoryId"`;
     const groupBy: string = ` GROUP BY c.id`;
+    const orderBy: string = ` ORDER BY c.id DESC`;
     const whereQuery: string = groupId ? ' WHERE c."groupId" = $1' : '';
     const categories: QueryResult<CategoryInterface> = await this.pool.query(
-      baseQuery + whereQuery + groupBy,
+      baseQuery + whereQuery + groupBy + orderBy,
       groupId ? [groupId] : [],
     );
     return categories.rows;
