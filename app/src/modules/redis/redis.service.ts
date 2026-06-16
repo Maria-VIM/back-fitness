@@ -14,7 +14,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit(): Promise<void> {
     try {
       this.client = createClient({
-        url: this.configService.get<string>('REDIS') ?? 'redis://localhost:6379',
+        url: this.configService.get<string>('REDIS') ?? 'redis://redis:6379',
 
         socket: {
           reconnectStrategy: (retries: number) => {

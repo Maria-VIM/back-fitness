@@ -41,7 +41,7 @@ async function bootstrap() {
   const config = new DocumentBuilder().setTitle('Wellness Fitness').setVersion('1.0').build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
-  const port: number = +process.env.SVC_PORT! || 8080;
+  const port: number = +process.env.SVC_PORT! || 8000;
   const hostname: string = process.env.SVC_HOSTNAME || '0.0.0.0';
   await app.listen(port, hostname);
 }
